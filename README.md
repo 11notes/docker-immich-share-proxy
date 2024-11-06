@@ -100,7 +100,8 @@ networks:
 * [11notes/node:stable](https://hub.docker.com/r/11notes/node)
 
 # BUILT WITH
-* [lightGallery](https://github.com/sachinchoolur/lightGallery)
+* [lightGallery](https://github.com/sachinchoolur/lightGallery) *thanks for the free license Ujjwal*
+* [nodejs](https://nodejs.org/en)
 * [alpine](https://alpinelinux.org)
 
 # TIPS
