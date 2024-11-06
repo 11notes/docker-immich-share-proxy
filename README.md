@@ -11,11 +11,11 @@
 **This is cool and all, but how does it work?**
 First, setup your external domain in your Immich instance to the same domain you will be using on Traefik to expose Immich internally and externally.
 
-![Immich External Domain](https://github.com/11notes/docker-immich-public-proxy/blob/main/img/immich.external.domain.png?raw=true)
+![Immich External Domain](https://github.com/11notes/docker-immich-share-proxy/blob/main/img/immich.external.domain.png?raw=true)
 
 After that, simply create a share in Immich. You can use passwords too, but you can’t prevent downloading, this option is ignored. You will get a sharable link.
 
-![Immich Sharing Link](https://github.com/11notes/docker-immich-public-proxy/blob/main/img/immich.share.link.png?raw=true)
+![Immich Sharing Link](https://github.com/11notes/docker-immich-share-proxy/blob/main/img/immich.share.link.png?raw=true)
 
 That’s it. If you send someone this link, and you have setup your Traefik or Nginx for the /share prefix, the person receiving the share can now access all pictures from the share, without having any access to Immich itself.
 
