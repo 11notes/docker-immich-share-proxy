@@ -1,9 +1,9 @@
 ![Banner](https://github.com/11notes/defaults/blob/main/static/img/banner.png?raw=true)
 
 # 🏔️ Alpine - Immich Share Proxy
-![size](https://img.shields.io/docker/image-size/11notes/immich-share-proxy/1.4.0?color=0eb305) ![version](https://img.shields.io/docker/v/11notes/immich-share-proxy/1.4.0?color=eb7a09) ![pulls](https://img.shields.io/docker/pulls/11notes/immich-share-proxy?color=2b75d6)
+[<img src="https://img.shields.io/badge/github-source-blue?logo=github">](https://github.com/11notes/docker-immich-share-proxy/tree/1.4.0) ![size](https://img.shields.io/docker/image-size/11notes/immich-share-proxy/1.4.0?color=0eb305) ![version](https://img.shields.io/docker/v/11notes/immich-share-proxy/1.4.0?color=eb7a09) ![pulls](https://img.shields.io/docker/pulls/11notes/immich-share-proxy?color=2b75d6)
 
-**Expose your Immich shares publicly without exposing Immich!**
+**Expose your Immich shares publicly without exposing Immich itself, all on the same domain!**
 
 # SYNOPSIS
 **What can I do with this?** This image will make it possible to securely expose your Immich shared albums without giving any access to Immich itself. It acts as a proxy between your reverse proxy and Immich to only expose what is needed to share. It works on the same domain name, there is no need to configure an alternative name just for sharing. You can check the Traefik example on how to use Immich and the share proxy on the same domain.
