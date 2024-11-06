@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title><%- title || 'Gallery' %></title>
+    <link type="text/css" rel="stylesheet" href="/share/public/style.css"/>
+    <link type="text/css" rel="stylesheet" href="/share/public/lightgallery-bundle.min.css"/>
+</head>
+<body>
+<div id="lightgallery">
+    <% items.forEach(item => {
+    if (item.video) { %>
+        <a data-video='<%- item.video %>'>
+            <img alt="" src="/share<%- item.thumbnailUrl %>"/>
+            <div class="play-icon"></div>
+        </a>
+    <% } else { %>
+        <a href="/share<%- item.originalUrl %>">
+            <img alt="" src="/share<%- item.thumbnailUrl %>"/>
+        </a>
+    <% }
+    }) %>
+</div>
+<script src="/share/public/web.js"></script>
+<script src="/share/public/lightgallery.min.js"></script>
+<script src="/share/public/lg-fullscreen.min.js"></script>
+<script src="/share/public/lg-thumbnail.min.js"></script>
+<script src="/share/public/lg-video.min.js"></script>
+<script src="/share/public/lg-zoom.min.js"></script>
+<script type="text/javascript">
+  initLightGallery(<%- JSON.stringify(lgConfig) %>) // initLightGallery imported from web.js
+  <% if (openItem) { %>
+  const openItem = <%- openItem %>
+  const thumbs = document.querySelectorAll('#lightgallery a')
+  if (thumbs.length >= openItem) {
+    thumbs[openItem - 1].click()
+  }
+  <% } %>
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+name: "immich"
+services:
+  share-proxy:
+    image: "11notes/immich-share-proxy:1.4.0"
+    container_name: "immich.share-proxy"
+    environment:
+      TZ: "Europe/Zurich"
+      IMMICH_URL: "http://server:2283"
+      LIGHT_GALLERY_CONFIG: |-
+        {
+          "ipp": {
+            "singleImageGallery": true
+          },
+          "lightGallery": {
+            "controls": true,
+            "download": false,
+            "mobileSettings": {
+              "controls": true,
+              "showCloseIcon": true,
+              "download": false
+            }
+          }
+        }
+    ports:
+      - "3000:3000/tcp"
+    # same FQDN (photos.domain.com) as Immich itself but only on path /share
+    labels:
+      - "traefik/http/routers/photos.domain.com-share/entrypoints=https"
+      - "traefik/http/routers/photos.domain.com-share/tls=true"
+      - "traefik/http/routers/photos.domain.com-share/rule=(Host(`photos.domain.com`)&&PathPrefix(`/share`))"
+      - "traefik/http/routers/photos.domain.com-share/service=photos.domain.com-share"
+      - "traefik/http/services/photos.domain.com-share/loadbalancer/servers/0/url=http://share-proxy:3000"
+    networks:
+      frontend:
+    restart: "always"
+
+  server:
+    image: "ghcr.io/immich-app/immich-server:v1.118.2"
+    container_name: "immich"
+    ports:
+      - "2283:2283/tcp"
+    labels:
+      - "traefik/http/routers/photos.domain.com/entrypoints=https"
+      - "traefik/http/routers/photos.domain.com/tls=true"
+      - "traefik/http/routers/photos.domain.com/rule=(Host(`photos.domain.com`))"
+      - "traefik/http/routers/photos.domain.com/service=photos.domain.com"
+      - "traefik/http/services/photos.domain.com/loadbalancer/servers/0/url=http://server:2283"
+    networks:
+      frontend:
+    restart: "always"
+
+networks:
+  frontend:
