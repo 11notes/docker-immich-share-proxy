@@ -23,7 +23,7 @@ app.get('/share/:key', async (req, res) => {
 })
 
 // Receive an unlock request from the password page
-app.post('/share/public/unlock', async (req, res) => {
+app.post('/share/unlock', async (req, res) => {
   await immich.handleShareRequest({
     key: toString(req.body.key),
     password: toString(req.body.password)
