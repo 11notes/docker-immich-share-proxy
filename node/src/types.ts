@@ -32,6 +32,7 @@ export interface SharedLinkResult {
 
 export enum ImageSize {
   thumbnail = 'thumbnail',
+  preview = 'preview',
   original = 'original'
 }
 
@@ -39,4 +40,5 @@ export interface IncomingShareRequest {
   key: string;
   password?: string;
   size?: ImageSize;
+  range?: string;
 }

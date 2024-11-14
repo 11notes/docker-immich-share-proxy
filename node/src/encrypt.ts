@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 
-interface Payload {
+interface EncryptedPayload {
   iv: string;
   cr: string; // Encrypted data
 }
@@ -9,7 +9,7 @@ interface Payload {
 const key = crypto.randomBytes(32)
 const algorithm = 'aes-256-cbc'
 
-export function encrypt (text: string): Payload {
+export function encrypt (text: string): EncryptedPayload {
   try {
     const ivBuf = crypto.randomBytes(16)
     const cipher = crypto.createCipheriv(algorithm, Buffer.from(key), ivBuf)
@@ -27,7 +27,7 @@ export function encrypt (text: string): Payload {
   }
 }
 
-export function decrypt (payload: Payload) {
+export function decrypt (payload: EncryptedPayload) {
   try {
     const decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), Buffer.from(payload.iv, 'hex'))
     let decrypted = decipher.update(payload.cr, 'hex', 'utf8')

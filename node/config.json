@@ -4,7 +4,8 @@
       "Cache-Control": "public, max-age=2592000"
     },
     "singleImageGallery": false,
-    "singleItemAutoOpen": true
+    "singleItemAutoOpen": true,
+    "downloadOriginalPhoto": true
   },
   "lightGallery": {
     "controls": true,

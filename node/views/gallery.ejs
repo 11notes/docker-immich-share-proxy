@@ -3,6 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title><%- title || 'Gallery' %></title>
+    <link rel="icon" type="image/x-icon" href="/share/public/favicon.ico">
     <link type="text/css" rel="stylesheet" href="/share/public/style.css"/>
     <link type="text/css" rel="stylesheet" href="/share/public/lightgallery-bundle.min.css"/>
 </head>
@@ -15,11 +16,15 @@
             <div class="play-icon"></div>
         </a>
     <% } else { %>
-        <a href="/share<%- item.originalUrl %>">
+        <a href="/share<%- item.previewUrl %>"<% if (item.downloadUrl) { %>
+           data-download-url="/share<%- item.downloadUrl %>"<% } %>>
             <img alt="" src="/share<%- item.thumbnailUrl %>"/>
         </a>
     <% }
     }) %>
+</div>
+<div>
+  <a href="/share/download">Download All</a>
 </div>
 <script src="/share/public/web.js"></script>
 <script src="/share/public/lightgallery.min.js"></script>

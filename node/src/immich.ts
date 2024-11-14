@@ -12,7 +12,7 @@ class Immich {
    */
   async request (endpoint: string) {
     try {
-      const res = await fetch(process.env.IMMICH_URL + '/api' + endpoint)
+      const res = await fetch(this.apiUrl() + endpoint)
       if (res.status === 200) {
         const contentType = res.headers.get('Content-Type') || ''
         if (contentType.includes('application/json')) {
@@ -29,6 +29,10 @@ class Immich {
     }
   }
 
+  apiUrl () {
+    return process.env.IMMICH_URL + '/api'
+  }
+
   /**
    * Handle an incoming request for a shared link `key`. This is the main function which
    * communicates with Immich and returns the output back to the visitor.
@@ -40,53 +44,73 @@ class Immich {
    * 404 - any other failed request. Check console.log for details.
    */
   async handleShareRequest (request: IncomingShareRequest, res: Response) {
+    // Add the headers configured in config.json (most likely `cache-control`)
     addResponseHeaders(res)
+
+    // Check that the key is a valid format
     if (!immich.isKey(request.key)) {
-      // This is not a valid key format
       log('Invalid share key ' + request.key)
       res.status(404).send()
-    } else {
-      // Get information about the shared link via Immich API
-      const sharedLinkRes = await immich.getShareByKey(request.key, request.password)
-      if (!sharedLinkRes.valid) {
-        // This isn't a valid request - check the console for more information
-        res.status(404).send()
-      } else if (sharedLinkRes.passwordRequired && request.password) {
-        // A password is required, but the visitor-provided one doesn't match
-        log('Invalid password for key ' + request.key)
-        res.status(401).send()
-      } else if (sharedLinkRes.passwordRequired) {
-        // Password required - show the visitor the password page
-        // `req.params.key` should already be sanitised at this point, but it never hurts to be explicit
-        const key = request.key.replace(/[^\w-]/g, '')
-        res.render('password', { key, lgConfig: render.lgConfig })
-      } else if (sharedLinkRes.link) {
-        // Valid shared link
-        const link = sharedLinkRes.link
-        if (!link.assets.length) {
-          log('No assets for key ' + request.key)
-          res.status(404).send()
-        } else if (link.assets.length === 1) {
-          // This is an individual item (not a gallery)
-          log('Serving link ' + request.key)
-          const asset = link.assets[0]
-          if (asset.type === AssetType.image && !getConfigOption('ipp.singleImageGallery')) {
-            // For photos, output the image directly unless configured to show a gallery
-            await render.assetBuffer(res, link.assets[0], request.size)
-          } else {
-            // Show a gallery page
-            const openItem = getConfigOption('ipp.singleItemAutoOpen', true) ? 1 : 0
-            await render.gallery(res, link, openItem)
-          }
-        } else {
-          // Multiple images - render as a gallery
-          log('Serving link ' + request.key)
-          await render.gallery(res, link)
-        }
+      return
+    }
+
+    // Get information about the shared link via Immich API
+    const sharedLinkRes = await immich.getShareByKey(request.key, request.password)
+    if (!sharedLinkRes.valid) {
+      // This isn't a valid request - check the console for more information
+      res.status(404).send()
+      return
+    }
+
+    // A password is required, but the visitor-provided one doesn't match
+    if (sharedLinkRes.passwordRequired && request.password) {
+      log('Invalid password for key ' + request.key)
+      res.status(401).send()
+      return
+    }
+
+    // Password required - show the visitor the password page
+    if (sharedLinkRes.passwordRequired) {
+      // `request.key` is already sanitised at this point, but it never hurts to be explicit
+      const key = request.key.replace(/[^\w-]/g, '')
+      res.render('password', {
+        key,
+        lgConfig: render.lgConfig
+      })
+      return
+    }
+
+    if (!sharedLinkRes.link) {
+      log('Unknown error with key ' + request.key)
+      res.status(404).send()
+      return
+    }
+
+    // Make sure there are some photo/video assets for this link
+    const link = sharedLinkRes.link
+    if (!link.assets.length) {
+      log('No assets for key ' + request.key)
+      res.status(404).send()
+      return
+    }
+
+    // Everything is ok - output the link page
+    if (link.assets.length === 1) {
+      // This is an individual item (not a gallery)
+      log('Serving link ' + request.key)
+      const asset = link.assets[0]
+      if (asset.type === AssetType.image && !getConfigOption('ipp.singleImageGallery')) {
+        // For photos, output the image directly unless configured to show a gallery
+        await render.assetBuffer(request, res, link.assets[0], ImageSize.preview)
       } else {
-        log('Unknown error with key ' + request.key)
-        res.status(404).send()
+        // Show a gallery page
+        const openItem = getConfigOption('ipp.singleItemAutoOpen', true) ? 1 : 0
+        await render.gallery(res, link, openItem)
       }
+    } else {
+      // Multiple images - render as a gallery
+      log('Serving link ' + request.key)
+      await render.gallery(res, link)
     }
   }
 
@@ -101,8 +125,7 @@ class Immich {
       password
     })
     const res = await fetch(url)
-    const contentType = res.headers.get('Content-Type') || ''
-    if (contentType.includes('application/json')) {
+    if ((res.headers.get('Content-Type') || '').includes('application/json')) {
       const jsonBody = await res.json()
       if (jsonBody) {
         if (res.status === 200) {
@@ -141,33 +164,14 @@ class Immich {
   }
 
   /**
-   * Stream asset buffer data from Immich.
-   *
-   * For photos, you can request 'thumbnail' or 'original' size.
-   * For videos, it is Immich's streaming quality, not the original quality.
+   * Get the content-type of a video, for passing back to lightGallery
    */
-  async getAssetBuffer (asset: Asset, size?: ImageSize) {
-    switch (asset.type) {
-      case AssetType.image:
-        size = size === ImageSize.thumbnail ? ImageSize.thumbnail : ImageSize.original
-        return this.request(this.buildUrl('/assets/' + encodeURIComponent(asset.id) + '/' + size, {
-          key: asset.key,
-          password: asset.password
-        }))
-      case AssetType.video:
-        return this.request(this.buildUrl('/assets/' + encodeURIComponent(asset.id) + '/video/playback', {
-          key: asset.key,
-          password: asset.password
-        }))
-    }
-  }
-
-  /**
-   * Get the content-type of an Immich asset
-   */
-  async getContentType (asset: Asset) {
-    const assetBuffer = await this.getAssetBuffer(asset)
-    return assetBuffer.headers.get('Content-Type')
+  async getVideoContentType (asset: Asset) {
+    const data = await this.request(this.buildUrl('/assets/' + encodeURIComponent(asset.id) + '/video/playback', {
+      key: asset.key,
+      password: asset.password
+    }))
+    return data.headers.get('Content-Type')
   }
 
   /**
@@ -190,11 +194,10 @@ class Immich {
    * Return the image data URL for a photo
    */
   photoUrl (key: string, id: string, size?: ImageSize, password?: string) {
-    const params = { key, size }
-    if (password) {
-      Object.assign(params, this.encryptPassword(password))
-    }
-    return this.buildUrl(`/photo/${key}/${id}`, params)
+    const path = ['photo', key, id]
+    if (size) path.push(size)
+    const params = password ? this.encryptPassword(password) : {}
+    return this.buildUrl('/' + path.join('/'), params)
   }
 
   /**
@@ -237,6 +240,14 @@ class Immich {
 
   async accessible () {
     return !!(await immich.request('/server/ping'))
+  }
+
+  validateImageSize (size: unknown) {
+    if (!size || !Object.values(ImageSize).includes(size as ImageSize)) {
+      return ImageSize.preview
+    } else {
+      return size as ImageSize
+    }
   }
 }
 

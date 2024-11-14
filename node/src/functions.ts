@@ -1,6 +1,5 @@
 import dayjs from 'dayjs'
-import { Request, Response } from 'express-serve-static-core'
-import { ImageSize } from './types'
+import { Response } from 'express-serve-static-core'
 
 let config = {}
 try {
@@ -9,7 +8,7 @@ try {
 } catch (e) { }
 
 /**
- * Get a configuration option using dotted notation.
+ * Get a configuration option fron config.json using dotted notation.
  *
  * @param path
  * @param [defaultOption] - Specify a default option to return if no configuation value is found
@@ -32,13 +31,8 @@ export const getConfigOption = (path: string, defaultOption?: unknown) => {
 export const log = (message: string) => console.log(dayjs().format() + ' ' + message)
 
 /**
- * Sanitise the data for an incoming query string `size` parameter
- * e.g. https://example.com/share/abc...xyz?size=thumbnail
+ * Force a value to be a string
  */
-export function getSize (req: Request) {
-  return req.query?.size === 'thumbnail' ? ImageSize.thumbnail : ImageSize.original
-}
-
 export function toString (value: unknown) {
   return typeof value === 'string' ? value : ''
 }

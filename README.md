@@ -1,7 +1,7 @@
 ![Banner](https://github.com/11notes/defaults/blob/main/static/img/banner.png?raw=true)
 
 # 🏔️ Alpine - Immich Share Proxy
-[<img src="https://img.shields.io/badge/github-source-blue?logo=github">](https://github.com/11notes/docker-immich-share-proxy/tree/1.4.0) ![size](https://img.shields.io/docker/image-size/11notes/immich-share-proxy/1.4.0?color=0eb305) ![version](https://img.shields.io/docker/v/11notes/immich-share-proxy/1.4.0?color=eb7a09) ![pulls](https://img.shields.io/docker/pulls/11notes/immich-share-proxy?color=2b75d6)
+[<img src="https://img.shields.io/badge/github-source-blue?logo=github">](https://github.com/11notes/docker-immich-share-proxy/tree/1.4.1) ![size](https://img.shields.io/docker/image-size/11notes/immich-share-proxy/1.4.1?color=0eb305) ![version](https://img.shields.io/docker/v/11notes/immich-share-proxy/1.4.1?color=eb7a09) ![pulls](https://img.shields.io/docker/pulls/11notes/immich-share-proxy?color=2b75d6)
 
 **Expose your Immich shares publicly without exposing Immich itself, all on the same domain!**
 
@@ -24,7 +24,7 @@ That’s it. If you send someone this link, and you have setup your Traefik or N
 name: "immich"
 services:
   share-proxy:
-    image: "11notes/immich-share-proxy:1.4.0"
+    image: "11notes/immich-share-proxy:1.4.1"
     container_name: "immich.share-proxy"
     environment:
       TZ: "Europe/Zurich"
@@ -32,15 +32,20 @@ services:
       LIGHT_GALLERY_CONFIG: |-
         {
           "ipp": {
-            "singleImageGallery": true
+            "responseHeaders": {
+              "Cache-Control": "public, max-age=2592000"
+            },
+            "singleImageGallery": false,
+            "singleItemAutoOpen": true,
+            "downloadOriginalPhoto": true
           },
           "lightGallery": {
             "controls": true,
-            "download": false,
+            "download": true,
             "mobileSettings": {
-              "controls": true,
+              "controls": false,
               "showCloseIcon": true,
-              "download": false
+              "download": true
             }
           }
         }
@@ -94,7 +99,7 @@ networks:
 | `LIGHT_GALLERY_CONFIG` | Inline config for [lightGallery](https://github.com/sachinchoolur/lightGallery) |  |
 
 # SOURCE
-* [11notes/immich-share-proxy:1.4.0](https://github.com/11notes/docker-immich-share-proxy/tree/1.4.0)
+* [11notes/immich-share-proxy:1.4.1](https://github.com/11notes/docker-immich-share-proxy/tree/1.4.1)
 
 # PARENT IMAGE
 * [11notes/node:stable](https://hub.docker.com/r/11notes/node)

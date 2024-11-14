@@ -1,7 +1,7 @@
 name: "immich"
 services:
   share-proxy:
-    image: "11notes/immich-share-proxy:1.4.0"
+    image: "11notes/immich-share-proxy:1.4.1"
     container_name: "immich.share-proxy"
     environment:
       TZ: "Europe/Zurich"
@@ -9,15 +9,20 @@ services:
       LIGHT_GALLERY_CONFIG: |-
         {
           "ipp": {
-            "singleImageGallery": true
+            "responseHeaders": {
+              "Cache-Control": "public, max-age=2592000"
+            },
+            "singleImageGallery": false,
+            "singleItemAutoOpen": true,
+            "downloadOriginalPhoto": true
           },
           "lightGallery": {
             "controls": true,
-            "download": false,
+            "download": true,
             "mobileSettings": {
-              "controls": true,
+              "controls": false,
               "showCloseIcon": true,
-              "download": false
+              "download": true
             }
           }
         }

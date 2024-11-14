@@ -11,7 +11,7 @@ FROM multiarch/qemu-user-static:x86_64-aarch64 as qemu
 
 # :: Build
   FROM 11notes/node:stable as build
-  ARG BUILD_VERSION=1.4.0
+  ARG BUILD_VERSION=1.4.1
   ARG BUILD_ROOT=/immich-share-proxy
 
   USER root
@@ -32,7 +32,7 @@ FROM multiarch/qemu-user-static:x86_64-aarch64 as qemu
   COPY --from=build /node /node
   ENV NODE_ENV=production
   ENV APP_NAME="immich-share-proxy"
-  ENV APP_VERSION=1.4.0
+  ENV APP_VERSION=1.4.1
   ENV IMMICH_URL="http://immich.server:2283"
 
 # :: Run
