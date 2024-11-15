@@ -19,6 +19,18 @@ After that, simply create a share in Immich. You can use passwords too, but you 
 
 That’s it. If you send someone this link, and you have setup your Traefik or Nginx for the /share prefix, the person receiving the share can now access all pictures from the share, without having any access to Immich itself. You can of course add additional authentication via Authentik middleware or whatever you prefer or simply use the password feature of Immich itself.
 
+For the download all option you need to also add an API key from Immich. Go to your account settings:
+
+![Immich Account Settings](https://github.com/11notes/docker-immich-share-proxy/blob/main/img/immich.apikey.png?raw=true)
+
+and create a new API key for Immich Share Proxy
+
+![Immich API key](https://github.com/11notes/docker-immich-share-proxy/blob/main/img/immich.apikey.proxy.png?raw=true)
+
+and copy the key
+
+![Immich API key copy](https://github.com/11notes/docker-immich-share-proxy/blob/main/img/immich.apikey.copy.png?raw=true)
+
 # COMPOSE
 ```yaml
 name: "immich"
@@ -29,6 +41,7 @@ services:
     environment:
       TZ: "Europe/Zurich"
       IMMICH_URL: "http://server:2283"
+      IMMICH_API_KEY: "dse53b342dst4552c345235v345v2345v23b2345b3253"
       LIGHT_GALLERY_CONFIG: |-
         {
           "ipp": {
@@ -96,6 +109,7 @@ networks:
 | `DEBUG` | Show debug information | |
 | `HEALTHCHECK_URL` | URL to use for health check | http://localhost:3000/healthcheck |
 | `IMMICH_URL` | Immich internal URL | http://immich.server:2283 |
+| `IMMICH_API_KEY` | Needed for *Download All* option |  |
 | `LIGHT_GALLERY_CONFIG` | Inline config for [lightGallery](https://github.com/sachinchoolur/lightGallery) |  |
 
 # SOURCE

@@ -6,6 +6,7 @@ services:
     environment:
       TZ: "Europe/Zurich"
       IMMICH_URL: "http://server:2283"
+      IMMICH_API_KEY: "dse53b342dst4552c345235v345v2345v23b2345b3253"
       LIGHT_GALLERY_CONFIG: |-
         {
           "ipp": {

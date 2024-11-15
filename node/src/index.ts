@@ -15,6 +15,7 @@ app.set('view engine', 'ejs')
 app.use(express.json())
 // Serve static assets from the /public folder
 app.use('/share/public', express.static('public', { setHeaders: addResponseHeaders }))
+app.use(express.json())
 
 /*
  * [ROUTE] This is the main URL that someone would visit if they are opening a shared link
@@ -39,8 +40,17 @@ app.post('/share/unlock', async (req, res) => {
  * [ROUTE] Download all pictures as zip
  */
 app.post('/share/download', async (req, res) => {
-  // Add the headers configured in config.json (most likely `cache-control`)
-  addResponseHeaders(res)
+  const data = await fetch(`${immich.apiUrl()}/download/archive`, { method:'POST', headers:{'Content-Type': 'application/json', 'x-api-key':immich.apiKey()}, body:JSON.stringify(req.body) })
+  if (data.status == 200) {
+    await data.body?.pipeTo(
+      new WritableStream({
+        write (chunk) { res.write(chunk) }
+      })
+    )
+    res.end()
+  } else {
+    res.status(404).send()
+  }
 })
 
 /*

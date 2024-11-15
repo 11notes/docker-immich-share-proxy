@@ -33,6 +33,10 @@ class Immich {
     return process.env.IMMICH_URL + '/api'
   }
 
+  apiKey () {
+    return process.env.IMMICH_API_KEY
+  }
+
   /**
    * Handle an incoming request for a shared link `key`. This is the main function which
    * communicates with Immich and returns the output back to the visitor.

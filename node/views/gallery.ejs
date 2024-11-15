@@ -11,20 +11,39 @@
 <div id="lightgallery">
     <% items.forEach(item => {
     if (item.video) { %>
-        <a data-video='<%- item.video %>'>
+        <a id="<%- item.id %>" data-video='<%- item.video %>'>
             <img alt="" src="/share<%- item.thumbnailUrl %>"/>
             <div class="play-icon"></div>
         </a>
     <% } else { %>
-        <a href="/share<%- item.previewUrl %>"<% if (item.downloadUrl) { %>
+        <a id="<%- item.id %>" href="/share<%- item.previewUrl %>"<% if (item.downloadUrl) { %>
            data-download-url="/share<%- item.downloadUrl %>"<% } %>>
             <img alt="" src="/share<%- item.thumbnailUrl %>"/>
         </a>
     <% }
     }) %>
 </div>
-<div>
-  <a href="/share/download">Download All</a>
+<div style="color: #f1ecec; width:100%;">
+  <div style="display: flex; align-items: center; gap: 4pt; cursor: pointer; width:100%; justify-content: center; margin-top: 4pt;" onclick="downloadZip()">
+    <div>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        class="  "
+        role="img"
+        stroke="currentColor"
+        stroke-width="0"
+        aria-label="Download"
+      >
+        <path
+          d="M20 18H4V8H20M20 6H12L10 4H4A2 2 0 0 0 2 6V18A2 2 0 0 0 4 20H20A2 2 0 0 0 22 18V8A2 2 0 0 0 20 6M14 9H16V13H19L15 17L11 13H14Z"
+          fill="currentColor"
+        ></path>
+      </svg>
+    </div>
+    <div>Download All</div>
+  </div>
 </div>
 <script src="/share/public/web.js"></script>
 <script src="/share/public/lightgallery.min.js"></script>
@@ -41,6 +60,29 @@
     thumbs[openItem - 1].click()
   }
   <% } %>
+
+  function downloadZip(){
+    const assetIds = [
+    <% items.forEach(item => { %>
+      "<%- item.id %>",
+    <% }) %>
+    ];
+
+
+    (async () => {
+      const qFetch = fetch('/share/download', {method:'POST', headers:{'Content-Type': 'application/json'}, body:JSON.stringify({assetIds:assetIds})})
+        .then(res => res.blob())
+        .then( blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'immich-share-proxy.zip';
+          document.body.appendChild(a); 
+          a.click();
+          a.remove();
+        });
+    })();    
+  }
 </script>
 </body>
 </html>
