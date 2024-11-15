@@ -5,6 +5,10 @@
 
 **Expose your Immich shares publicly without exposing Immich itself, all on the same domain!**
 
+![Immich Share Proxy Index](https://github.com/11notes/docker-immich-share-proxy/blob/main/img/immich.share.proxy.index.png?raw=true)
+
+![Immich Share Proxy Gallery](https://github.com/11notes/docker-immich-share-proxy/blob/main/img/immich.share.proxy.gallery.png?raw=true)
+
 # SYNOPSIS
 **What can I do with this?** This image will make it possible to securely expose your Immich shared albums without giving any access to Immich itself. It acts as a proxy between your reverse proxy and Immich to only expose what is needed to share. It works on the same domain name, there is no need to configure an alternative name just for sharing. You can check the Traefik example on how to use Immich and the share proxy on the same domain.
 
