@@ -1,7 +1,7 @@
 name: "immich"
 services:
   share-proxy:
-    image: "11notes/immich-share-proxy:1.4.1"
+    image: "11notes/immich-share-proxy:1.4.2"
     container_name: "immich.share-proxy"
     environment:
       TZ: "Europe/Zurich"

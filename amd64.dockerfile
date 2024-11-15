@@ -8,7 +8,7 @@
 
 # :: Build
   FROM 11notes/node:stable as build
-  ARG BUILD_VERSION=1.4.1
+  ARG BUILD_VERSION=1.4.2
   ARG BUILD_ROOT=/immich-share-proxy
 
   USER root
@@ -28,7 +28,7 @@
   COPY --from=build /node /node
   ENV NODE_ENV=production
   ENV APP_NAME="immich-share-proxy"
-  ENV APP_VERSION=1.4.1
+  ENV APP_VERSION=1.4.2
   ENV IMMICH_URL="http://immich.server:2283"
 
 # :: Run
