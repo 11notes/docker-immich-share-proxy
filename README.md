@@ -126,6 +126,7 @@ networks:
 * [lightGallery](https://github.com/sachinchoolur/lightGallery) *thanks for the free license Ujjwal*
 * [nodejs](https://nodejs.org/en)
 * [alpine](https://alpinelinux.org)
+* [alangrainger/immich-public-proxy](https://github.com/alangrainger/immich-public-proxy) *inspiration*
 
 # TIPS
 * Use a reverse proxy like Traefik, Nginx to terminate TLS with a valid certificate
